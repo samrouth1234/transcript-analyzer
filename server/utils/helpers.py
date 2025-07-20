@@ -16,4 +16,3 @@ def format_transcript(transcript_list):
         if text:
             formatted.append(text)
     return ' '.join(formatted)
-
