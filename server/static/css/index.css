@@ -1,0 +1,29 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background: whitesmoke;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+nav {
+  background: #1254a0;
+  padding: 25px 10px;
+}
+
+nav a{
+  color: white;
+  padding: 10px;
+  font-weight: bold;
+  text-decoration: none;
+}
