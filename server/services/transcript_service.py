@@ -3,17 +3,10 @@ from server.exceptions.api_exceptions import NotFoundException
 from server.models.transcript_model import TranscriptModel
 from server.utils.helpers import extract_video_id, format_transcript
 
-# import os
-# from flask import current_app
-# from werkzeug.utils import secure_filename
-# from openai import OpenAI
-
 import requests
 
 
 class TranscriptService:
-    # def __init__(self):
-    #     self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
     @staticmethod
     def get_video_info(video_id: str) -> dict:
@@ -69,28 +62,3 @@ class TranscriptService:
             transcript=formatted,
             raw_transcript=transcript_list
         ).to_dict()
-
-    # def _allowed_file(self,filename):
-    #     return '.' in filename and \
-    #         filename.rsplit('.', 1)[1].lower() in {
-    #             'mp3', 'wav', 'ogg', 'flac', 'm4a', 'aac', 'wma', 'webm', 'mp4', 'avi'
-    #         }
-    #
-    # def transcribe_audio(self, file, method, language):
-    #     filename = secure_filename(file.filename)
-    #
-    #     if not self._allowed_file(filename):
-    #         raise ValueError("Invalid file type")
-    #
-    #     save_path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
-    #     file.save(save_path)
-    #
-    #     with open(save_path, "rb") as audio_file:
-    #         response = self.client.audio.transcriptions.create(
-    #             model="whisper-1",
-    #             file=audio_file,
-    #             response_format="text",
-    #             language=language
-    #         )
-    #
-    #     return response
