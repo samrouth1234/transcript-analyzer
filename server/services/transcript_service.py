@@ -4,6 +4,11 @@ from server.models.transcript_model import TranscriptModel
 from server.utils.helpers import extract_video_id, format_transcript
 
 import requests
+import logging
+
+# Configure logging for better debugging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 
 class TranscriptService:
@@ -11,8 +16,10 @@ class TranscriptService:
     @staticmethod
     def get_video_info(video_id: str) -> dict:
         try:
+            # Add timeout for deployment environment
             response = requests.get(
-                f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json"
+                f"https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v={video_id}&format=json",
+                timeout=10
             )
             if response.status_code == 200:
                 data = response.json()
@@ -22,7 +29,7 @@ class TranscriptService:
                     "thumbnail": data.get("thumbnail_url")
                 }
         except Exception as e:
-            print("oEmbed failed:", e)
+            logger.warning(f"oEmbed failed for video {video_id}: {e}")
 
         return {
             "title": f"Video: {video_id}",
@@ -32,33 +39,44 @@ class TranscriptService:
 
     @staticmethod
     def process_transcript(url: str) -> dict:
-        video_id = extract_video_id(url)
-        if not video_id:
-            raise NotFoundException("Invalid YouTube URL")
+        try:
+            video_id = extract_video_id(url)
+            if not video_id:
+                raise NotFoundException("Invalid YouTube URL")
 
-        transcript_list = None
-        for lang in ['en', 'en-US', 'en-GB', 'auto']:
-            try:
-                transcript_list = (
-                    YouTubeTranscriptApi.get_transcript(video_id)
-                    if lang == 'auto' else
-                    YouTubeTranscriptApi.get_transcript(video_id, languages=[lang])
-                )
-                break
-            except Exception:
-                continue
+            logger.info(f"Processing transcript for video: {video_id}")
 
-        if not transcript_list:
-            raise NotFoundException("No transcript available")
+            transcript_list = None
+            for lang in ['en', 'en-US', 'en-GB', 'auto']:
+                try:
+                    transcript_list = (
+                        YouTubeTranscriptApi.get_transcript(video_id)
+                        if lang == 'auto' else
+                        YouTubeTranscriptApi.get_transcript(video_id, languages=[lang])
+                    )
+                    logger.info(f"Found transcript in language: {lang}")
+                    break
+                except Exception as lang_error:
+                    logger.debug(f"Failed to get transcript in {lang}: {lang_error}")
+                    continue
 
-        formatted = format_transcript(transcript_list)
-        info = TranscriptService.get_video_info(video_id)
+            if not transcript_list:
+                raise NotFoundException("No transcript available for this video")
 
-        return TranscriptModel(
-            video_id=video_id,
-            title=info["title"],
-            channel=info["channel"],
-            thumbnail=info["thumbnail"],
-            transcript=formatted,
-            raw_transcript=transcript_list
-        ).to_dict()
+            formatted = format_transcript(transcript_list)
+            info = TranscriptService.get_video_info(video_id)
+
+            return TranscriptModel(
+                video_id=video_id,
+                title=info["title"],
+                channel=info["channel"],
+                thumbnail=info["thumbnail"],
+                transcript=formatted,
+                raw_transcript=transcript_list
+            ).to_dict()
+        
+        except NotFoundException:
+            raise
+        except Exception as e:
+            logger.error(f"Unexpected error processing transcript: {e}")
+            raise NotFoundException("Error processing transcript")

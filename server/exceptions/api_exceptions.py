@@ -3,6 +3,11 @@ from flask import jsonify
 class APIException(Exception):
     status_code = 500
     message = "Internal server error"
+    
+    def __init__(self, message=None):
+        if message:
+            self.message = message
+        super().__init__(self.message)
 
     def to_response(self):
         return jsonify({"error": self.message}), self.status_code
