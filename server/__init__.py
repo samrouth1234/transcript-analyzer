@@ -12,6 +12,7 @@ def create_app():
     
     app = Flask(__name__, 
                 static_folder=os.path.join(basedir, 'static'),
+                static_url_path='/static',
                 template_folder=os.path.join(basedir, 'templates'))
     
     # Configure CORS for deployment
