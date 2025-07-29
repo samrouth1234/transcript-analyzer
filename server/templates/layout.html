@@ -1,28 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>{% block title %}YouTube Transcript Analyzer{% endblock %}</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/index.css') }}">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}YouTube Transcript Analyzer{% endblock %}</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/index.css') }}"
+    />
 
-  {% block style %}{% endblock %}
-</head>
-<body>
-  <main>
-    {# header #}
-    {% block header %}
-{#      <nav>#}
-{#        <a href="/">Home</a>#}
-{#        <a href="/about">About</a>#}
-{#        <a href="/audio">Audio</a>#}
-{#        <a href="/transcript">Transcript</a>#}
-{#      </nav>#}
-    {% endblock %}
-    {# content #}
-    {% block content %}{% endblock %}
-    {# footer #}
-    {% block scripts %}{% endblock %}
-  </main>
-</body>
+    {% block style %}{% endblock %}
+  </head>
+  <body>
+    <main>
+      {# header #} {% block header %} {#
+      <nav>
+        #} {# <a href="/">Home</a>#} {# <a href="/about">About</a>#} {#
+        <a href="/audio">Audio</a>#} {# <a href="/transcript">Transcript</a>#}
+        {#
+      </nav>
+      #} {% endblock %} {# content #} {% block content %}{% endblock %} {#
+      footer #} {% block scripts %}{% endblock %}
+    </main>
+  </body>
 </html>

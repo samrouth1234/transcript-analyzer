@@ -1,5 +1,3 @@
-let transcriptData = undefined;
-
 async function extractTranscript() {
   const url = document.getElementById("urlInput").value;
 
@@ -60,7 +58,9 @@ function displayResults(data) {
   // Keywords
   const keywordsHTML = `
     <ul>
-      ${extractKeywords(data.transcript).map(word => `<li>${word}</li>`).join("")}
+      ${extractKeywords(data.transcript)
+        .map((word) => `<li>${word}</li>`)
+        .join("")}
     </ul>
   `;
   document.getElementById("keywords").innerHTML = keywordsHTML;
@@ -91,59 +91,6 @@ function downloadTranscript() {
   URL.revokeObjectURL(downloadUrl);
 }
 
-function convertAudioToText(formId = 'uploadForm', inputId = 'audioInput', resultId = 'transcriptResult') {
-  const form = document.getElementById(formId);
-  const audioInput = document.getElementById(inputId);
-  const transcriptDiv = document.getElementById(resultId);
-
-  if (!form || !audioInput || !transcriptDiv) {
-    console.error("Missing required elements in the DOM.");
-    return;
-  }
-
-  form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-
-    if (!audioInput.files.length) {
-      transcriptDiv.innerHTML = '<p style="color:red;">Please select a file.</p>';
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append('file', audioInput.files[0]);
-
-    try {
-      transcriptDiv.innerHTML = 'Uploading and transcribing...';
-
-      const response = await fetch('/api/v1/upload', {
-        method: 'POST',
-        body: formData
-      });
-
-      const result = await response.json();
-
-      if (result.error) {
-        transcriptDiv.innerHTML = `<p style="color:red;">${result.error}</p>`;
-        return;
-      }
-
-      transcriptDiv.innerHTML = `
-        <p><strong>Uploaded:</strong> ${result.filename}</p>
-        <p><strong>Transcript:</strong><br>${result.transcript || 'Transcription not implemented yet.'}</p>
-      `;
-
-    } catch (err) {
-      console.error(err);
-      transcriptDiv.innerHTML = '<p style="color:red;">Something went wrong.</p>';
-    }
-  });
-}
-
-// Initialize the upload handler after the DOM is ready
-document.addEventListener('DOMContentLoaded', () => {
-  convertAudioToText();
-});
-
 function showError(message) {
   document.getElementById("error").style.display = "block";
   document.getElementById("error").innerText = message;
@@ -156,15 +103,16 @@ function clearResults() {
 }
 
 function loadSampleVideo() {
-  document.getElementById("urlInput").value = "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
-  extractTranscript().then(r => {});
+  document.getElementById("urlInput").value =
+    "https://www.youtube.com/watch?v=dQw4w9WgXcQ";
+  extractTranscript().then((r) => {});
 }
 
 function extractKeywords(text) {
   // Simple keyword extraction (placeholder)
   const words = text.toLowerCase().split(/\W+/);
   const freq = {};
-  words.forEach(word => {
+  words.forEach((word) => {
     if (word.length > 4) freq[word] = (freq[word] || 0) + 1;
   });
 
